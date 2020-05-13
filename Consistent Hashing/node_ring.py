@@ -49,7 +49,7 @@ class NodeRing():
 
 
 def test():
-    ring = NodeRing(nodes=NODES, hashsize=3600)
+    ring = NodeRing(nodes=NODES, hashsize=360)
     node = ring.get_node('9ad5794ec94345c4873c4e591788743a')
     print(node)
     print(ring.get_node('ed9440c442632621b608521b3f2650b8'))
