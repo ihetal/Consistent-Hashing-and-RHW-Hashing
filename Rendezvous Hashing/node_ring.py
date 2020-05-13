@@ -29,4 +29,4 @@ def test():
 
 
 # Uncomment to run the above local test via: python3 node_ring.py
-test()
+# test()
