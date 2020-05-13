@@ -7,7 +7,7 @@ import mmh3
 
 class NodeRing():
 
-    def __init__(self, nodes=NODES, hashsize=3600, virtuallayers=3):
+    def __init__(self, nodes=NODES, hashsize=360, virtuallayers=3):
         assert len(nodes) > 0
         self.nodes = nodes
         self.hashsize = hashsize-1
@@ -36,6 +36,16 @@ class NodeRing():
             pos = 0
         nodeKey = self._sorted_keys[pos]
         return self.ring[nodeKey]
+
+    def get_node_withReplication(self, key_hex):
+        to_hash = key_hex.encode('utf-8')
+        key = int(hash_code_hex(to_hash), 16) % self.hashsize
+        pos = bisect.bisect(self._sorted_keys, key)
+        if(pos >= len(self._sorted_keys)-1):
+            pos = 0
+        nodeKey1 = self._sorted_keys[pos]
+        nodeKey2 = self._sorted_keys[pos+1]
+        return self.ring[nodeKey1], self.ring[nodeKey2]
 
 
 def test():

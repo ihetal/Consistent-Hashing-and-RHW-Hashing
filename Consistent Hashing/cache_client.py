@@ -6,6 +6,7 @@ from server_config import NODES
 from pickle_hash import serialize_GET, serialize_PUT
 from node_ring import NodeRing
 
+
 BUFFER_SIZE = 1024
 
 
@@ -23,6 +24,19 @@ class UDPClient():
             print("Error! {}".format(socket.error))
             exit()
 
+    def replicateData(self, request, replicationServer):
+        print('Replicating data to server at {}:{}'.format(
+            replicationServer['host'], replicationServer['port']))
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.sendto(
+                request, (replicationServer['host'], replicationServer['port']))
+            response, ip = s.recvfrom(BUFFER_SIZE)
+            return response
+        except socket.error:
+            print("Error! {}".format(socket.error))
+            exit()
+
 
 def process():
     client_ring = NodeRing()
@@ -30,9 +44,10 @@ def process():
     # PUT all users.
     for u in USERS:
         data_bytes, key = serialize_PUT(u)
-        server = client_ring.get_node(key)
+        server, replicationServer = client_ring.get_node_withReplication(key)
         response = UDPClient().send(data_bytes, server)
         print(response)
+        UDPClient().replicateData(data_bytes, replicationServer)
         hash_codes.add(str(response.decode()))
 
     print(
